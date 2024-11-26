@@ -321,7 +321,6 @@ const leaveTeam = async (req, res) => {
   try {
     const equipeId = req.params.equipeId;
     const id = req.params.id; 
-    // const io = req.io; 
 
     await User.updateMany({}, { $pull: { equipes: equipeId } });
     await Equipe.updateMany({ _id: equipeId }, { $pull: { members: { memberId: id } } });
@@ -341,7 +340,7 @@ const leaveTeam = async (req, res) => {
     const projects = await Project.find({
       'Equipe': { $in: equipeIds }
     }).populate('Equipe').populate('Responsable', 'firstName profilePicture');
-    req.io.emit('updateProjects', projects); // Emit updateProjects event
+    // req.io.emit('updateProjects', projects); // Emit updateProjects event
 
     res.status(200).json({ updatedEquipe, projects });
   } catch (error) {

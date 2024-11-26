@@ -39,9 +39,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// console.log('Memory Usage:', process.memoryUsage());
-// console.log('CPU Usage:', os.cpus());
-
 
 // Middleware
 app.use(express.json());
@@ -75,7 +72,7 @@ const communicationRoute = require('./routes/CommunicationSpace');
 const worflowRoute = require('./routes/workflows');
 const typeRoute = require('./routes/Types');
 
-const { updateAllTicketsEtat } = require('./controllers/Tickets');
+// const { updateAllTicketsEtat } = require('./controllers/Tickets');
 // Google OAuth strategy
 require("./controllers/google-auth")(passport);
 
@@ -151,11 +148,11 @@ const parseDuration = (durationStr) => {
 
 
   
-cron.schedule('0 0 * * *', async () => {
-  console.log('Checking ticket statuses...');
+// cron.schedule('0 0 * * *', async () => {
+//   console.log('Checking ticket statuses...');
   
-  await updateAllTicketsEtat(io); 
-});
+//   await updateAllTicketsEtat(io); 
+// });
 
 
 
@@ -232,7 +229,7 @@ const approachingDeadline = async () => {
         });
 
         const savedNotification = await notificationData.save();
-        console.log('Notification saved to MongoDB:', savedNotification);
+        // console.log('Notification saved to MongoDB:', savedNotification);
 
         // Emit 'approachingDeadline' event to all connected clients
         io.emit('messages', { type: 'approachingDeadline', ...savedNotification._doc });
@@ -314,7 +311,6 @@ const inactiveMember = async () => {
       });
 
       const savedNotification = await notificationData.save();
-      console.log('Notification saved to MongoDB:', savedNotification);
 
       // Emit 'inactiveMember' event to all connected clients
       io.emit('messages', { type: 'inactiveMember', ...savedNotification._doc });
@@ -398,7 +394,7 @@ const checkOverdueTasks = async () => {
         });
 
         const savedNotification = await notificationData.save();
-        console.log('Notification saved to MongoDB:', savedNotification);
+        // console.log('Notification saved to MongoDB:', savedNotification);
 
         io.emit('messages', { type: 'overdueTask', ...savedNotification._doc });
       }
@@ -428,7 +424,7 @@ io.on('connection', (socket) => {
       });
   
       const savedNotification = await notificationData.save();
-      console.log('Notification saved to MongoDB:', savedNotification);
+      // console.log('Notification saved to MongoDB:', savedNotification);
   
       // Emit the message to the connected clients
       io.emit('messages', { type: 'projectnotification', ...notificationData._doc });
@@ -458,7 +454,7 @@ io.on('connection', (socket) => {
       });
 
       const savedNotification = await notificationData.save();
-      console.log('Notification saved to MongoDB:', savedNotification);
+      // console.log('Notification saved to MongoDB:', savedNotification);
 
       // Emit 'messages' event to all connected clients with type ticket
       io.emit('messages', { type: 'ticketnotification', ...notificationData._doc });
@@ -613,4 +609,3 @@ cron.schedule('0 */3 * * *', () => {
 // });
 
 module.exports = {app,io};
-

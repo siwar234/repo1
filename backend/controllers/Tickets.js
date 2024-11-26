@@ -5,7 +5,6 @@ const Task = require('../models/Tasks');
 const Features = require('../models/Features');
 const { predictAndUpdateTicketDuration } = require('../controllers/Tasks');
 const moment = require('moment');
-const { io } = require("../server") 
 const Workflow=require("../models/workflow")
 const cron = require('node-cron');
 const Type = require("../models/Types");

@@ -27,15 +27,6 @@ exports.getNotifications = async (req, res) => {
 
   
 
-// exports.getTicketNotification = async (req, res) => {
-//     try {
-//       const notifications = await Notification.find({ responsible_ticket: req.params.userId }).populate('ticket').populate('responsible_ticket');
-//       res.status(200).json(notifications);
-//     } catch (error) {
-//       console.error('Error getting notifications:', error);
-//       res.status(500).json({ error: 'Internal server error' });
-//     }
-//   };
 
 // Mark notification as read
 exports.markAsRead = async (req, res) => {
