@@ -85,44 +85,6 @@ exports.createTickets = async (req, res) => {
 
 
 
-
-
-
-// function calculateEndDate(createdAt, estimatedDuration) {
-//   if (!createdAt || !estimatedDuration) {
-//     throw new Error('Both createdAt and estimatedDuration must be provided');
-//   }
-
-//   // Define a variable to hold the number of days to add
-//   let daysToAdd = 0;
-
-//   // Check if the estimatedDuration includes "day" or "week"
-//   const durationParts = estimatedDuration.split(' ');
-
-//   for (let i = 0; i < durationParts.length; i += 2) {
-//     const durationValue = parseInt(durationParts[i]);
-//     const durationUnit = durationParts[i + 1].toLowerCase();
-
-//     if (durationUnit.includes('day')) {
-//       daysToAdd += durationValue; // Add days
-
-//       });
-
-   
-
-//       const savedTicket = await tickets.save();
-
-//       await Task.findByIdAndUpdate(TaskId, { $push: { tickets: savedTicket._id } });
-
-//       res.status(201).json(savedTicket);
-//   } catch (error) {
-//       console.error('Error creating tickets:', error);
-//       res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
-
-
-
 exports.FilterTicketsPerPerson = async (req, res) => {
   try {
     const { projectId, person } = req.params;
@@ -138,15 +100,17 @@ exports.FilterTicketsPerPerson = async (req, res) => {
           { path: 'votes', model: 'User' },
           { path: 'workflow', model: 'Workflow' },
           { path: 'Types', model: 'Types' },
-
           {
             path: 'associatedTickets',
             populate: [
-              { path: 'ticketId', model: 'Tickets', 
-                populate: { path: 'ResponsibleTicket', model: 'User' },
-                populate: { path: 'workflow', model: 'Workflow' } 
-
-               }
+              { 
+                path: 'ticketId', 
+                model: 'Tickets',
+                populate: [
+                  { path: 'ResponsibleTicket', model: 'User' },
+                  { path: 'workflow', model: 'Workflow' }
+                ]
+              }
             ]
           },
           {
@@ -212,280 +176,33 @@ exports.FilterTicketsPerPerson = async (req, res) => {
                 path: "commenterId",
                 model: "User"
               }
-            }).populate('workflow').populate('Types')
+            })
+            .populate({
+              path: 'associatedTickets',
+              populate: [
+                {
+                  path: 'ticketId',
+                  model: 'Tickets',
+                  populate: [
+                    {
+                      path: 'ResponsibleTicket',
+                      model: 'User'
+                    },
+                    {
+                      path: 'workflow',
+                      model: 'Workflow'
+                    }
+                  ]
+                }
+              ]
+            })
+            
+            .populate('workflow').populate('Types')
                    res.status(200).json(alltickets);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
 };
-
-
-// //tickets association 
-
-
-
-// exports.associateTicket = async (req, res) => {
-//   const { ticketId, associatedTicketIds, relation } = req.body;
-//   try {
-
-//     if (!ticketId || !Array.isArray(associatedTicketIds) || !relation) {
-//       return res.status(400).json({ message: 'Invalid request data' });
-//     }
-
-//     if (!mongoose.Types.ObjectId.isValid(ticketId)) {
-//       return res.status(400).json({ message: 'Invalid main ticket ID' });
-//     }
-
-//     for (const id of associatedTicketIds) {
-//       if (!mongoose.Types.ObjectId.isValid(id)) {
-//         return res.status(400).json({ message: 'Invalid associated ticket ID' });
-//       }
-//     }
-
-//     // Find and update the main ticket
-//     let ticket = await Tickets.findById(ticketId)
-//       .populate('ResponsibleTicket')
-//       .populate('Feature')
-//       .populate('User')
-//       .populate('votes')
-//       .populate({
-//         path: 'comments',
-//         populate: {
-//           path: 'commenterId',
-//           model: 'User'
-//         }
-//       }) .populate({
-//         path: 'childTickets',
-//         populate: [
-//           {
-//             path: 'ticketId',
-//             model: 'Tickets',
-            
-//           }
-//         ]
-//       })
-//       .populate({
-//         path: 'associatedTickets',
-//         populate: [
-//           {
-//             path: 'ticketId',
-//             model: 'Tickets',
-//             populate: {
-//               path: 'ResponsibleTicket',
-//               model: 'User'
-//             }
-//           }
-//         ]
-//       }).populate('workflow').populate('Types');
-     
-//     if (!ticket) {
-//       return res.status(404).json({ message: 'Ticket not found' });
-//     }
-
-//     // Create associated ticket objects
-//     const associatedTicketObjects = associatedTicketIds.map(id => ({
-//       ticketId: id,
-//       relation
-//     }));
-
-//     // Add associated tickets to the main ticket
-//     ticket.associatedTickets.push(...associatedTicketObjects);
-//     await ticket.save();
-
-//     const task = await Task.findById(ticket.TaskId)
-//       .populate('tickets')
-//       .populate('related')
-//       .populate({
-//         path: 'tickets',
-//         populate: [
-//           { path: 'ResponsibleTicket', model: 'User' },
-//           { path: 'Feature', model: 'Features' },
-//           { path: 'workflow', model: 'Workflow' },
-//           { path: 'Types', model: 'Types' },
-//           {
-//             path: 'associatedTickets',
-//             populate: [
-//               {
-//                 path: 'ticketId',
-//                 model: 'Tickets',
-//                 populate: { path: 'ResponsibleTicket', model: 'User' }
-//               }
-//             ]
-//           },
-//           {
-//             path: 'childTickets',
-//             populate: [
-//               {
-//                 path: 'ticketId',
-//                 model: 'Tickets',
-//               },
-//             ],
-//           },
-//           { path: 'votes', model: 'User' }
-//         ]
-//       });
-
-//     if (!task) {
-//       return res.status(404).json({ error: 'Task not found' });
-//     }
-
-//     // update associated tickets to reference the main ticket
-//     await Tickets.updateMany(
-//       { _id: { $in: associatedTicketIds } },
-//       { $addToSet: { associatedTickets: { ticketId: ticketId, relation: relation } } }
-//     );
-
-//     ticket = await Tickets.findById(ticketId)
-//       .populate('ResponsibleTicket')
-//       .populate('Feature')
-//       .populate('User')
-//       .populate('votes')
-//       .populate({
-//         path: 'comments',
-//         populate: {
-//           path: 'commenterId',
-//           model: 'User'
-//         }
-//       })
-//       .populate({
-//         path: 'associatedTickets',
-//         populate: [
-//           {
-//             path: 'ticketId',
-//             model: 'Tickets',
-//             populate: {
-//               path: 'ResponsibleTicket',
-//               model: 'User'
-//             }
-//           }
-//         ]
-//       }).populate('workflow').populate('Types');
-
-//       const taskId=task._id
-//     res.status(200).json({ task, taskId, ticket });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-
-
-
-// exports.dissociateTicket = async (req, res) => {
-//   const { ticketId, associatedTicketId } = req.body;
-
-//   try {
-//     if (!ticketId || !associatedTicketId) {
-//       return res.status(400).json({ message: 'Invalid request data' });
-//     }
-
-//     if (!mongoose.Types.ObjectId.isValid(ticketId) || !mongoose.Types.ObjectId.isValid(associatedTicketId)) {
-//       return res.status(400).json({ message: 'Invalid ticket ID(s)' });
-//     }
-
-//     // Find the main ticket
-//     let ticket = await Tickets.findById(ticketId);
-//     if (!ticket) {
-//       return res.status(404).json({ message: 'Main ticket not found' });
-//     }
-
-//     console.log('Main ticket found:', ticketId);
-
-//     // Remove the associated ticket reference from the main ticket's associatedTickets array
-//     ticket.associatedTickets = ticket.associatedTickets.filter(
-//       (assocTicket) => assocTicket.ticketId.toString() !== associatedTicketId
-//     );
-
-//     await ticket.save();
-//     console.log('Associated ticket reference removed from main ticket:', associatedTicketId);
-
-//     // // Permanently delete the associated ticket from the database
-//     // const deleteResult = await Tickets.findByIdAndDelete(associatedTicketId);
-
-//     // if (deleteResult) {
-//     //   console.log('Associated ticket deleted from the database:', associatedTicketId);
-//     // } else {
-//     //   console.error('Failed to delete associated ticket:', associatedTicketId);
-//     // }
-
-//     // Remove the reference of the main ticket from other tickets' associatedTickets arrays
-//     const updateResult = await Tickets.updateMany(
-//       { 'associatedTickets.ticketId': ticketId },
-//       { $pull: { associatedTickets: { ticketId: ticketId } } }
-//     );
-
-//     console.log('Update result for other tickets:', updateResult);
-
-//     // Re-fetch the updated main ticket to return in the response
-//     ticket = await Tickets.findById(ticketId)
-//       .populate('ResponsibleTicket')
-//       .populate('Feature')
-//       .populate('User')
-//       .populate('votes')
-//       .populate({
-//         path: 'comments',
-//         populate: {
-//           path: 'commenterId',
-//           model: 'User',
-//         },
-//       })
-//       .populate({
-//         path: 'associatedTickets',
-//         populate: [
-//           {
-//             path: 'ticketId',
-//             model: 'Tickets',
-//             populate: {
-//               path: 'ResponsibleTicket',
-//               model: 'User',
-//             },
-//           },
-//         ],
-//       }).populate('workflow').populate("Types");
-
-//     const task = await Task.findById(ticket.TaskId)
-//       .populate('tickets')
-//       .populate('related')
-//       .populate({
-//         path: 'tickets',
-//         populate: [
-//           { path: 'ResponsibleTicket', model: 'User' },
-//           { path: 'Feature', model: 'Features' },
-//           { path: 'workflow', model: 'Workflow' },
-//           { path: 'Types', model: 'Types' },
-
-//           {
-//             path: 'associatedTickets',
-//             populate: [
-//               {
-//                 path: 'ticketId',
-//                 model: 'Tickets',
-//                 populate: { path: 'ResponsibleTicket', model: 'User' },
-//               },
-//             ],
-//           },
-//           { path: 'votes', model: 'User' },
-//         ],
-//       });
-
-//     if (!task) {
-//       return res.status(404).json({ error: 'Task not found' });
-//     }
-
-//     res.status(200).json({ task, taskId: task._id, ticket });
-//   } catch (error) {
-//     console.error('Error during dissociation:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-
-
-
-
-
-
 
 
   exports.getListTicketsByproject = async (req, res) => {
@@ -506,14 +223,18 @@ exports.FilterTicketsPerPerson = async (req, res) => {
         populate: [
           {
             path: 'ticketId',
-            model: 'Tickets'},
-             {
-              path: 'ResponsibleTicket',
-              model: 'User'
-            },
-            { path: 'workflow', model: 'Workflow' } 
-
-          
+            model: 'Tickets',
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
+          }
         ]
       }).populate('workflow').populate("Types")
       res.status(200).json(tickets);
@@ -564,18 +285,23 @@ exports.FilterTicketsPerPerson = async (req, res) => {
             path: "commenterId",
             model: "User"
           }
-        }).populate({
+        }) 
+        .populate({
           path: 'associatedTickets',
           populate: [
             {
               path: 'ticketId',
               model: 'Tickets',
-              populate: {
-                path: 'ResponsibleTicket',
-                model: 'User'
-              },
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                {
+                  path: 'ResponsibleTicket',
+                  model: 'User'
+                },
+                {
+                  path: 'workflow',
+                  model: 'Workflow'
+                }
+              ]
             }
           ]
         }).populate('workflow').populate("Types");
@@ -649,12 +375,14 @@ exports.updateTicket = async (req, res) => {
               { 
                 path: 'ticketId', 
                 model: 'Tickets',
-                populate: { path: 'ResponsibleTicket', model: 'User' } ,
-                populate: { path: 'workflow', model: 'Workflow' } 
-
+                populate: [
+                  { path: 'ResponsibleTicket', model: 'User' },
+                  { path: 'workflow', model: 'Workflow' }
+                ]
               }
             ]
           },
+          
           { 
             path: 'comments', 
             populate: { path: 'commenterId', model: 'User' } 
@@ -687,12 +415,16 @@ exports.updateTicket = async (req, res) => {
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User'
-            },
-            populate: { path: 'workflow', model: 'Workflow' } 
-
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
       }).populate('workflow').populate("Types");
@@ -900,12 +632,14 @@ exports.updateTicketfeature = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
         { 
           path: 'comments', 
           populate: { path: 'commenterId', model: 'User' } 
@@ -930,18 +664,22 @@ exports.updateTicketfeature = async (req, res) => {
         path: "commenterId",
         model: "User"
       }
-    }).populate({
+    }) .populate({
       path: 'associatedTickets',
       populate: [
         {
           path: 'ticketId',
           model: 'Tickets',
-          populate: {
-            path: 'ResponsibleTicket',
-            model: 'User',
-            populate: { path: 'workflow', model: 'Workflow' } 
-
-          }
+          populate: [
+            {
+              path: 'ResponsibleTicket',
+              model: 'User'
+            },
+            {
+              path: 'workflow',
+              model: 'Workflow'
+            }
+          ]
         }
       ]
     }).populate('workflow')
@@ -986,18 +724,23 @@ exports.addComment = async (req, res) => {
         path: "commenterId",
         model: "User"
       }
-    }).populate({
+    })
+    .populate({
       path: 'associatedTickets',
       populate: [
         {
           path: 'ticketId',
           model: 'Tickets',
-          populate: {
-            path: 'ResponsibleTicket',
-            model: 'User',
-            populate: { path: 'workflow', model: 'Workflow' } 
-
-          }
+          populate: [
+            {
+              path: 'ResponsibleTicket',
+              model: 'User'
+            },
+            {
+              path: 'workflow',
+              model: 'Workflow'
+            }
+          ]
         }
       ]
     }).populate('workflow');   
@@ -1018,12 +761,14 @@ exports.addComment = async (req, res) => {
               { 
                 path: 'ticketId', 
                 model: 'Tickets',
-                populate: { path: 'ResponsibleTicket', model: 'User' } ,
-                populate: { path: 'workflow', model: 'Workflow' } 
-
+                populate: [
+                  { path: 'ResponsibleTicket', model: 'User' },
+                  { path: 'workflow', model: 'Workflow' }
+                ]
               }
             ]
           },
+          
           { 
             path: 'comments', 
             populate: { path: 'commenterId', model: 'User' } 
@@ -1075,12 +820,14 @@ exports.deleteComment = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
          { 
           path: 'comments', 
           populate: { path: 'commenterId', model: 'User' } 
@@ -1104,19 +851,27 @@ exports.deleteComment = async (req, res) => {
         path: "commenterId",
         model: "User"
       }
-    }).populate({
+    })
+    .populate({
       path: 'associatedTickets',
       populate: [
         {
           path: 'ticketId',
           model: 'Tickets',
-          populate: {
-            path: 'ResponsibleTicket',
-            model: 'User'
-          }
+          populate: [
+            {
+              path: 'ResponsibleTicket',
+              model: 'User'
+            },
+            {
+              path: 'workflow',
+              model: 'Workflow'
+            }
+          ]
         }
       ]
-    }).populate('workflow');   
+    })
+    .populate('workflow');   
 
     res.status(200).json({ task,ticketId,taskId,ticket});
     } catch (error) {
@@ -1164,21 +919,27 @@ exports.updateComment = async (req, res) => {
           path: 'commenterId',
           model: 'User'
         }
-      }).populate({
+      })
+      .populate({
         path: 'associatedTickets',
         populate: [
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User',
-              populate: { path: 'workflow', model: 'Workflow' } 
-
-            }
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
-      }).populate('workflow');
+      })
+      .populate('workflow');
 
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found' });
@@ -1201,12 +962,14 @@ exports.updateComment = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
         { path: 'votes', model: 'User' },
         { 
           path: 'comments', 
@@ -1251,19 +1014,20 @@ exports.addVote = async (req, res) => {
         { path: 'Feature', model: 'Features' } ,
          { path: 'votes', model: 'User' },
          { path: 'workflow', model: 'Workflow' },
-         
          {
           path: 'associatedTickets',
           populate: [
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
          { 
           path: 'comments', 
           populate: { path: 'commenterId', model: 'User' } 
@@ -1286,21 +1050,27 @@ exports.addVote = async (req, res) => {
         path: "commenterId",
         model: "User"
       }
-    }).populate({
+    })
+    .populate({
       path: 'associatedTickets',
       populate: [
         {
           path: 'ticketId',
           model: 'Tickets',
-          populate: {
-            path: 'ResponsibleTicket',
-            model: 'User',
-            populate: { path: 'workflow', model: 'Workflow' } 
-
-          }
+          populate: [
+            {
+              path: 'ResponsibleTicket',
+              model: 'User'
+            },
+            {
+              path: 'workflow',
+              model: 'Workflow'
+            }
+          ]
         }
       ]
-    }).populate('workflow').populate('Types');
+    })
+    .populate('workflow').populate('Types');
 
     res.status(200).json({task, ticketId, taskId, ticket });
     // res.status(200).json({task,ticketid, taskId, ticket });
@@ -1342,12 +1112,14 @@ exports.deleteVote = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
          { 
           path: 'comments', 
           populate: { path: 'commenterId', model: 'User' } 
@@ -1371,21 +1143,27 @@ exports.deleteVote = async (req, res) => {
         path: "commenterId",
         model: "User"
       }
-    }).populate({
+    })
+    .populate({
       path: 'associatedTickets',
       populate: [
         {
           path: 'ticketId',
           model: 'Tickets',
-          populate: {
-            path: 'ResponsibleTicket',
-            model: 'User',
-            populate: { path: 'workflow', model: 'Workflow' } 
-
-          }
+          populate: [
+            {
+              path: 'ResponsibleTicket',
+              model: 'User'
+            },
+            {
+              path: 'workflow',
+              model: 'Workflow'
+            }
+          ]
         }
       ]
-    }).populate('workflow').populate('Types');   
+    })
+    .populate('workflow').populate('Types');   
 
     res.status(200).json({ task,ticketId,taskId,ticket});
 
@@ -1445,12 +1223,14 @@ exports.updateTicketimages = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' },
-              populate: { path: 'workflow', model: 'Workflow' } 
- 
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
         { path: 'votes', model: 'User' }
       ]
     });
@@ -1472,21 +1252,27 @@ exports.updateTicketimages = async (req, res) => {
           path: "commenterId",
           model: "User"
         }
-      }).populate({
+      })
+      .populate({
         path: 'associatedTickets',
         populate: [
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User',
-              populate: { path: 'workflow', model: 'Workflow' } 
-
-            }
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
-      }).populate('workflow').populate('Types');
+      })
+      .populate('workflow').populate('Types');
 
     res.status(200).json({ task, ticketId, taskId, ticket });
 
@@ -1539,12 +1325,14 @@ exports.deleteTicket = async (req, res) => {
               { 
                 path: 'ticketId', 
                 model: 'Tickets',
-                populate: { path: 'ResponsibleTicket', model: 'User' } ,
-                populate: { path: 'workflow', model: 'Workflow' } 
-
+                populate: [
+                  { path: 'ResponsibleTicket', model: 'User' },
+                  { path: 'workflow', model: 'Workflow' }
+                ]
               }
             ]
           },
+          
           { path: 'votes', model: 'User' }
         ]
       });
@@ -1596,12 +1384,14 @@ exports.updateTicketFlag = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
         { path: 'votes', model: 'User' }
       ]
     });
@@ -1624,12 +1414,16 @@ exports.updateTicketFlag = async (req, res) => {
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User',
-              populate: { path: 'workflow', model: 'Workflow' } 
-
-            }
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
       })
@@ -1683,12 +1477,14 @@ exports.deleteticketflag = async (req, res) => {
             { 
               path: 'ticketId', 
               model: 'Tickets',
-              populate: { path: 'ResponsibleTicket', model: 'User' } ,
-              populate: { path: 'workflow', model: 'Workflow' } 
-
+              populate: [
+                { path: 'ResponsibleTicket', model: 'User' },
+                { path: 'workflow', model: 'Workflow' }
+              ]
             }
           ]
         },
+        
         { path: 'votes', model: 'User' }
       ]
     });
@@ -1710,10 +1506,16 @@ exports.deleteticketflag = async (req, res) => {
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User'
-            }
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
       })

@@ -5,14 +5,11 @@ const Tickets=require('../models/Tickets');
 const Feature = require('../models/Features');
 const Equipe = require('../models/Equipe');
 const Project = require('../models/Project');
-const axios = require('axios'); // Import Axios
-const env = require('dotenv').config();
 const fetch = require('node-fetch'); 
 global.fetch = fetch; 
 global.Headers = fetch.Headers;
 const moment = require('moment'); 
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 exports.updateTask = async (req, res) => {
   try {
@@ -341,13 +338,14 @@ exports.createTasks = async (req, res) => {
                 { 
                   path: 'ticketId', 
                   model: 'Tickets',
-                 
-
-                },
-                { path: 'ResponsibleTicket', model: 'User' },
-              { path: 'workflow', model: 'Workflow' } 
+                  populate: [
+                    { path: 'ResponsibleTicket', model: 'User' },
+                    { path: 'workflow', model: 'Workflow' }
+                  ]
+                }
               ]
             },
+            
             {
               path: 'childTickets',
               populate: [
@@ -358,7 +356,6 @@ exports.createTasks = async (req, res) => {
               ]
             },
             { path: 'projectId', model: 'Project' },
-            { path: 'workflow', model: 'Workflow' },
             { path: 'Types', model: 'Types' },
 
            
@@ -391,18 +388,19 @@ exports.relatedTasks = async (req, res) => {
           { path: 'workflow', model: 'Workflow' },
           { path: 'Types', model: 'Types' },
 ,
-          {
-            path: 'associatedTickets',
-            populate: [
-              { 
-                path: 'ticketId', 
-                model: 'Tickets',
-
-              },
-              { path: 'ResponsibleTicket', model: 'User' },
-              { path: 'workflow', model: 'Workflow' } 
-            ]
-          },
+{
+  path: 'associatedTickets',
+  populate: [
+    { 
+      path: 'ticketId', 
+      model: 'Tickets',
+      populate: [
+        { path: 'ResponsibleTicket', model: 'User' },
+        { path: 'workflow', model: 'Workflow' }
+      ]
+    }
+  ]
+},
           {
             path: 'childTickets',
             populate: [
@@ -459,11 +457,11 @@ exports.unrelatedTasks = async (req, res) => {
               { 
                 path: 'ticketId', 
                 model: 'Tickets',
-            
-
-              },
-              { path: 'ResponsibleTicket', model: 'User' },
-              { path: 'workflow', model: 'Workflow' } 
+                populate: [
+                  { path: 'ResponsibleTicket', model: 'User' },
+                  { path: 'workflow', model: 'Workflow' }
+                ]
+              }
             ]
           },
           {
@@ -528,20 +526,31 @@ exports.getAlltasks = async (req, res) => {
           { path: 'workflow', model: 'Workflow' },
           { path: 'Types', model: 'Types' },
 
-          {
-            path: 'associatedTickets',
-            populate: [
-              { 
-                path: 'ticketId', 
-                model: 'Tickets',
-              
-
-              }
-              ,
-              { path: 'ResponsibleTicket', model: 'User' },
-              { path: 'workflow', model: 'Workflow' } 
-            ]
-          },
+         {
+              path: 'associatedTickets',
+              populate: [
+                { 
+                  path: 'ticketId', 
+                  model: 'Tickets',
+                  populate: [
+                    { path: 'ResponsibleTicket', model: 'User' },
+                    { path: 'workflow', model: 'Workflow' }
+                  ]
+                }
+              ]
+            },  {
+              path: 'associatedTickets',
+              populate: [
+                { 
+                  path: 'ticketId', 
+                  model: 'Tickets',
+                  populate: [
+                    { path: 'ResponsibleTicket', model: 'User' },
+                    { path: 'workflow', model: 'Workflow' }
+                  ]
+                }
+              ]
+            },
           {
             path: 'childTickets',
             populate: [
@@ -573,122 +582,3 @@ exports.getAlltasks = async (req, res) => {
 
 
 
-
-
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-
-// exports.predictAndUpdateTaskDuration = async (req, res) => {
-//   try {
-//     const taskId = req.params.taskId;
-//     console.log('Starting prediction for task:', taskId);
-
-//     const task = await Tasks.findById(taskId).populate('tickets').populate('projectId').exec();
-//     if (!task) {
-//       console.log('Task not found:', taskId);
-//       return res.status(404).json({ error: 'Task not found' });
-//     }
-//     console.log('Task retrieved:', task);
-
-//     const taskData = {
-//       TaskName: task.TaskName,
-//       project: task.projectId.projectName,
-//       tickets: task.tickets.map(ticket => ({
-//         Description: ticket.Description,
-//       }))
-//     };
-
-//     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-//     const prompt = `
-//     Task: ${taskData.TaskName}
-//     Project: ${taskData.project}
-//     Tickets:
-//     ${taskData.tickets.map(ticket => `- ${ticket.Description}`).join('\n')}
-    
-//     Question: Please provide an estimated duration for completing this task in weeks (e.g., 1 week, 2 weeks, 3 weeks, 4 weeks). Just provide the number of weeks.
-//   `;
-
-
-//     console.log('Requesting prediction from Gemini API with prompt:', prompt);
-
-//     const result = await model.generateContent(prompt);
-//     const response = await result.response;
-
-//     // Ensure the response is valid and has the expected structure
-//     if (!response || !response.text) {
-//       console.error('Invalid response from Gemini API');
-//       return res.status(500).json({ error: 'Invalid response from Gemini API' });
-//     }
-
-//     const predictedDuration = response.text(); // Adjust based on the actual response structure
-//     task.Duration = predictedDuration;
-//     await task.save();
-
-//     console.log('Task duration updated successfully:', predictedDuration);
-//     res.status(200).json({ success: true, predictedDuration });
-//   } catch (error) {
-//     console.error('Error in predicting and updating task duration:', error);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
-
-
-exports.predictAndUpdateTicketDuration = async (ticketId) => {
-  try {
-    console.log('Starting prediction for ticket:', ticketId);
-
-    const ticket = await Tickets.findById(ticketId)
-      .populate('projectId')
-      .populate('TaskId')
-      .exec();
-
-    if (!ticket) {cr
-      console.log('Ticket not found:', ticketId);
-      throw new Error('Ticket not found');
-    }
-    console.log('Ticket retrieved:', ticket);
-
-    const ticketData = {
-      Description: ticket.Description,
-      TaskName: ticket.TaskId.TaskName,
-      Priority: ticket.Priority,
-      ProjectName: ticket.projectId.projectName,
-    };
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `
-      Ticket Description: ${ticketData.Description}
-      Task Name: ${ticketData.TaskName}
-      Priority: ${ticketData.Priority}
-      Project Name: ${ticketData.ProjectName}
-
-      Question: Please provide an estimated duration for completing this ticket based on its details. Just return 1 day, 2 days, 1 week, 2 weeks, 3 weeks, or 4 weeks.
-    `;
-
-    console.log('Requesting prediction from Gemini API with prompt:', prompt);
-
-    const result = await model.generateContent(prompt);
-    const response = result?.response;
-
-    if (!response || typeof response.text !== 'function') {
-      console.error('Invalid response from Gemini API');
-      throw new Error('Invalid response from Gemini API');
-    }
-
-    const responseText = await response.text();
-    console.log('Received response from Gemini API:', responseText);
-
-    // Extract the duration from the response text (days and weeks)
-    const durationPattern = /\b(1|2)\s*(days?|weeks?)\b/g; // Matches 1 day, 2 days, 1 week, or 2 weeks
-    const matches = responseText.match(durationPattern);
-    const predictedDuration = matches ? matches.join(', ') : 'Unknown duration'; 
-
-    ticket.EstimatedDuration = predictedDuration;
-    await ticket.save();
-
-    console.log('Ticket duration updated successfully:', predictedDuration);
-  } catch (error) {
-    console.error('Error in predicting and updating ticket duration:', error);
-  }
-};

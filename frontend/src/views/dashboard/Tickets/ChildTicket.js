@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Autocomplete, Button, Select, MenuItem, InputLabel, FormControl, Link, Box, TextField, Tooltip } from '@mui/material';
-import { addchildTicket, getChildTicket, getListTicketsByproject } from '../../../JS/actions/Tickets';
+import { addchildTicket, getListTicketsByproject } from '../../../JS/actions/Tickets';
 import { FcSearch } from 'react-icons/fc';
-import ChildList from './ChildList';
 
-export default function ChildTicket({ projectId, ticketId,taskId,isSecondGridOpen }) {
+export default function ChildTicket({ projectId, ticketId,taskId,setshowchildTicket }) {
   const [selectedRelation, setSelectedRelation] = useState('is blocked by');
   const [selectedTickets, setSelectedTickets] = useState([]);
 
   const dispatch = useDispatch();
-  const tickets = useSelector((state) => state.ticketsReducer.tickets);
 
   useEffect(() => {
 
@@ -26,20 +24,7 @@ export default function ChildTicket({ projectId, ticketId,taskId,isSecondGridOpe
     setSelectedTickets(newTickets);
   };
 
-  // const handleAssociate = () => {
-  //   const ticketIds = selectedTickets.map(ticket => ticket._id);
-  //   if (ticketIds.length === 0) {
-  //     console.error('No tickets selected');
-  //     return;
-  //   }
-  //   dispatch(associateTickets(ticketId, ticketIds, selectedRelation, projectId))
-  //     .then(() => {
-  //       setShowAssociateTicket(false); 
-  //     })
-  //     .catch(error => {
-  //       console.error('Failed to associate tickets:', error);
-  //     });
-  // };
+
 
   
 
@@ -100,7 +85,6 @@ export default function ChildTicket({ projectId, ticketId,taskId,isSecondGridOpe
         <Select
           // value={selectedRelation}
           value="subTask"
-
           label="Type"
           onChange={handleRelationChange}
         >
@@ -170,7 +154,7 @@ ticketId={isSecondGridOpen[taskId][ticketId]} projectId={projectId}  />
           <Button
             style={{ marginRight: '5px', width: "20px", fontSize: "12px", fontWeight: "bold" }}
             variant="outlined"
-            onClick={() => setshowsearch(false)}
+            onClick={() => setshowchildTicket(false)}
           >
             Cancel
           </Button>

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Typography, Box, Button, Tooltip, IconButton } from '@mui/material';
+import {  Typography, Box, Button, Tooltip } from '@mui/material';
 import image1 from '../../../assets/images/bug.png';
 import image2 from '../../../assets/images/checking.webp';
+
 import image3 from '../../../assets/images/storie.png';
+import image4 from '../../../assets/images/subtask.png';
+
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
@@ -10,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import { getChildTicket } from 'src/JS/actions/Tickets';
 import { useSelector } from 'react-redux';
 
-const ChildTicketItem = ({ childticket, mainTicketId,projectId  }) => {
+const ChildTicketItem = ({ childticket  }) => {
   const [isHovered, setIsHovered] = useState(false);
 //   const dispatch = useDispatch();
 
@@ -23,7 +26,7 @@ const ChildTicketItem = ({ childticket, mainTicketId,projectId  }) => {
       case 'story':
         return image3;
       default:
-        return image3;
+        return image4;
     }
   };
 
@@ -65,8 +68,8 @@ const ChildTicketItem = ({ childticket, mainTicketId,projectId  }) => {
       mb={0.2}
       p={1}
       border={1}
+      mr={2}
       borderColor={'#dedfe2'}
-      borderRadius={0}
      
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -78,18 +81,24 @@ const ChildTicketItem = ({ childticket, mainTicketId,projectId  }) => {
       }}
     >
       <Box display="flex" alignItems="center">
-        {/* <img
-          src={getImageSrc(ticket.ticketId?.type)}
+        <Tooltip title={childticket?.Type.TypesTitle} >
+        <img
+          src={getImageSrc(childticket?.Type?.TypesTitle)}
           alt="icon"
           style={{
-            width: ticket?.ticketId?.type === 'story' ? '21px' : '18px',
-            height: ticket?.ticketId?.type === 'story' ? '21px' : '18px',
+            width:childticket?.Type.TypesTitle === 'story' ? '21px' : '18px',
+            height: childticket?.Type?.TypesTitle === 'story' ? '21px' : '18px',
             marginRight: '15px',
           }}
-        /> */}
+        /></Tooltip>
+            <Box >
+        
+        <Typography mr={2}  variant="body2" color="black" >
+     {childticket?.ChildTicketidentifiant}   </Typography>
+      </Box>
         <Box>
         
-          <Typography variant="body2" color="black">
+          <Typography fontWeight={"bold"} variant="body2" color="black">
             {childticket?.ChildTicketDescription}
           </Typography>
         </Box>
@@ -198,8 +207,8 @@ const ChildList = ({  ticketId ,projectId,taskId,isSecondGridOpen}) => {
 
   return (
       <Box ml={2} mb={6} mt={3}>
-            <Box ml={2} mb={2} mt={4} >
-      {childtickets.length > 0 && <h4>child Tickets</h4>}
+            <Box  mb={2} mt={4} >
+      {childtickets.length > 0 && <h4>Child Tickets</h4>}
       </Box>
         {childtickets.map((childticket) => (
           <ChildTicketItem

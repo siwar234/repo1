@@ -39,6 +39,7 @@ async function seedWorkflows() {
           { TypesTitle: 'story'},
           { TypesTitle: 'Bug' },
           { TypesTitle: 'Task' },
+          { TypesTitle: 'subTask' },
 
           
         ];

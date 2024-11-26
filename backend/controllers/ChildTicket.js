@@ -54,7 +54,13 @@ exports.addchildTicket = async (req, res) => {
       if (!ticketId) {
         return res.status(400).json({ message: 'Invalid request data' });
       }
+
+      const subTaskType = await Type.findOne({ TypesTitle: 'subTask' });
+      if (!subTaskType) {
+        return res.status(500).json({ error: 'Default subTaskType not found' });
+      }
   
+      
       // Create child ticket object
       const tickets = new ChildTickets({
         ChildTicketidentifiant: randomString,
@@ -66,6 +72,7 @@ exports.addchildTicket = async (req, res) => {
         identifiant: randomString,
         workflow: todoWorkflow._id, 
         storyPoints: storyPoints || null,
+        Type:subTaskType._id
       });
   
       const child = await tickets.save(); 
@@ -91,16 +98,23 @@ exports.addchildTicket = async (req, res) => {
           path: "commenterId",
           model: "User"
         }
-      }).populate({
+      })
+      .populate({
         path: 'associatedTickets',
         populate: [
           {
             path: 'ticketId',
             model: 'Tickets',
-            populate: {
-              path: 'ResponsibleTicket',
-              model: 'User'
-            }
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
           }
         ]
       })
@@ -175,8 +189,9 @@ exports.addchildTicket = async (req, res) => {
         path: 'comments',
         populate: { path: 'commenterId', model: 'User' },
       })
-     
-      .populate('workflow');
+      
+
+      .populate('workflow').populate('Type');
 
 
       const parentticket= await Tickets.findById(TicketId)
@@ -188,21 +203,27 @@ exports.addchildTicket = async (req, res) => {
           path: "commenterId",
           model: "User"
         }
-      }).populate({
+      }) 
+      .populate({
         path: 'associatedTickets',
         populate: [
           {
             path: 'ticketId',
-            model: 'Tickets'},
-             {
-              path: 'ResponsibleTicket',
-              model: 'User'
-            },
-            { path: 'workflow', model: 'Workflow' } 
-
-          
+            model: 'Tickets',
+            populate: [
+              {
+                path: 'ResponsibleTicket',
+                model: 'User'
+              },
+              {
+                path: 'workflow',
+                model: 'Workflow'
+              }
+            ]
+          }
         ]
-      }).populate({
+      })
+      .populate({
         path: 'childTickets',
         populate: [
           {
@@ -227,16 +248,15 @@ exports.addchildTicket = async (req, res) => {
             {
               path: 'associatedTickets',
               populate: [
-                {
-                  path: 'ticketId',
+                { 
+                  path: 'ticketId', 
                   model: 'Tickets',
-
-                },
-                { path: 'ResponsibleTicket', model: 'User' },
-                 { path: 'workflow', model: 'Workflow' } 
-
-
-              ],
+                  populate: [
+                    { path: 'ResponsibleTicket', model: 'User' },
+                    { path: 'workflow', model: 'Workflow' }
+                  ]
+                }
+              ]
             },
             {
                 path: 'childTickets',

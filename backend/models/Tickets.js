@@ -82,9 +82,23 @@ const TicketsSchema = new mongoose.Schema(
         },
         relation: {
           type: String,
-          enum: ['is blocked by', 'blocks',`cloned by`], 
+          enum: [
+            'is blocked by',
+            'blocks',
+            'is cloned by',
+            'clones',
+            'is duplicated by',
+            'duplicates',
+            'is caused by',
+            'causes',
+            'relates to',
+          ],
         }
+        
       }],
+
+
+      
 
       childTickets: [{
         TicketId: {

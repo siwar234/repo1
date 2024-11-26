@@ -24,8 +24,10 @@ const associatedTicketsSchema = new mongoose.Schema(
     
       },
       
-     
-   
+      mainTicket: { type: mongoose.Schema.Types.ObjectId, ref: 'Tickets' },
+
+      relation: String, 
+      
       
       associatedTicketsdescriptionticket: {
         imageD: [{

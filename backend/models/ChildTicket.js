@@ -92,6 +92,8 @@ const ChildTicketSchema = new mongoose.Schema(
         flag :   { type: Boolean },
 
        
+        Type : 
+        { type: ObjectId, ref: 'Types' },
 
 
   

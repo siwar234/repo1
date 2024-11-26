@@ -687,23 +687,25 @@ const handleButtonClick = () => {
   taskId={taskId}
    ticketId={isSecondGridOpen[taskId][ticketId]?._id}
    projectId={projectId}  />
-<ChildList 
-isSecondGridOpen={isSecondGridOpen} 
-taskId={isSecondGridOpen[taskId]} 
-ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  /> 
+
 
 
 {showchildTicket && (
 
-<ChildTicket projectId={projectId} taskId={taskId} isSecondGridOpen={isSecondGridOpen}  setshowchildTicket={setshowchildTicket} 
+<ChildTicket  setshowchildTicket={setshowchildTicket}
+projectId={projectId} taskId={taskId} isSecondGridOpen={isSecondGridOpen} 
     ticketId={isSecondGridOpen[taskId][ticketId]?._id}
 
  />
  
+ 
  )} 
 
 
-
+<ChildList 
+isSecondGridOpen={isSecondGridOpen} 
+taskId={isSecondGridOpen[taskId]} 
+ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  /> 
 
 
                   {/* details box  */}

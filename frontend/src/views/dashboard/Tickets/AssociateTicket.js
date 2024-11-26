@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Autocomplete, Button, Select, MenuItem, InputLabel, FormControl, Link, Box, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Link,
+  Box,
+  TextField,
+} from '@mui/material';
 import { associateTickets, getListTicketsByproject } from 'src/JS/actions/Tickets';
 
 export default function AssociateTicket({ projectId, setShowAssociateTicket, ticketId }) {
@@ -23,26 +33,29 @@ export default function AssociateTicket({ projectId, setShowAssociateTicket, tic
   };
 
   const handleAssociate = () => {
-    const ticketIds = selectedTickets.map(ticket => ticket._id);
+    const ticketIds = selectedTickets.map((ticket) => ticket._id);
     if (ticketIds.length === 0) {
       console.error('No tickets selected');
       return;
     }
     dispatch(associateTickets(ticketId, ticketIds, selectedRelation, projectId))
       .then(() => {
-        setShowAssociateTicket(false); 
+        setShowAssociateTicket(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Failed to associate tickets:', error);
       });
   };
 
   // Find associated tickets for the current ticket
-  const associatedTickets = tickets.find(ticket => ticket._id === ticketId)?.associatedTickets || [];
-  const associatedTicketIds = associatedTickets.map(at => at.ticketId._id.toString());
+  const associatedTickets =
+    tickets.find((ticket) => ticket._id === ticketId)?.associatedTickets || [];
+  const associatedTicketIds = associatedTickets.map((at) => at.ticketId._id.toString());
 
   // Filter out tickets that are already associated with the current ticket
-  const filteredTickets = tickets.filter(ticket => !associatedTicketIds.includes(ticket._id.toString()) && ticket._id !== ticketId);
+  const filteredTickets = tickets.filter(
+    (ticket) => !associatedTicketIds.includes(ticket._id.toString()) && ticket._id !== ticketId,
+  );
 
   return (
     <Box sx={{ width: 365, display: 'flex', flexDirection: 'column', gap: 2 }} mt={6} mb={8} ml={2}>
@@ -50,15 +63,16 @@ export default function AssociateTicket({ projectId, setShowAssociateTicket, tic
 
       <FormControl fullWidth>
         <InputLabel>Relation</InputLabel>
-        <Select
-          value={selectedRelation}
-          label="Relation"
-          onChange={handleRelationChange}
-        >
+        <Select value={selectedRelation} label="Relation" onChange={handleRelationChange}>
           <MenuItem value="is blocked by">is blocked by</MenuItem>
           <MenuItem value="blocks">blocks</MenuItem>
-          <MenuItem value="cloned by">cloned by</MenuItem>
-
+          <MenuItem value="is cloned by">is cloned by</MenuItem>
+          <MenuItem value="clones">clones</MenuItem>
+          <MenuItem value="is duplicated by">is duplicated by</MenuItem>
+          <MenuItem value="duplicates">duplicates</MenuItem>
+          <MenuItem value="is caused by">is caused by</MenuItem>
+          <MenuItem value="causes">causes</MenuItem>
+          <MenuItem value="relates to">relates to</MenuItem>
         </Select>
       </FormControl>
 
@@ -68,16 +82,18 @@ export default function AssociateTicket({ projectId, setShowAssociateTicket, tic
         getOptionLabel={(option) => option.Description}
         value={selectedTickets}
         onChange={handleTicketsChange}
-        renderInput={(params) => <TextField {...params} label="Search Tickets" variant="outlined" />}
+        renderInput={(params) => (
+          <TextField {...params} label="Search Tickets" variant="outlined" />
+        )}
       />
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link href="#" underline="hover" style={{ fontSize: '13px', fontWeight: "bold" }}>
+        <Link href="#" underline="hover" style={{ fontSize: '13px', fontWeight: 'bold' }}>
           <span style={{ fontSize: '23px' }}>+</span> create an associated ticket
         </Link>
         <Box>
           <Button
-            style={{ marginRight: '5px', width: "20px", fontSize: "12px", fontWeight: "bold" }}
+            style={{ marginRight: '5px', width: '20px', fontSize: '12px', fontWeight: 'bold' }}
             variant="contained"
             color="primary"
             onClick={handleAssociate}
@@ -86,7 +102,7 @@ export default function AssociateTicket({ projectId, setShowAssociateTicket, tic
             Associate
           </Button>
           <Button
-            style={{ marginRight: '5px', width: "20px", fontSize: "12px", fontWeight: "bold" }}
+            style={{ marginRight: '5px', width: '20px', fontSize: '12px', fontWeight: 'bold' }}
             variant="outlined"
             onClick={() => setShowAssociateTicket(false)}
           >
