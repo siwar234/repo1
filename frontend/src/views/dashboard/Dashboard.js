@@ -14,6 +14,7 @@ import {
 import { IoFlagSharp } from 'react-icons/io5';
 
 import EditIcon from '@mui/icons-material/Edit';
+import image4 from '../../assets/images/subtask.png';
 
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
@@ -723,6 +724,8 @@ const Dashboard = () => {
                                                 ? image
                                                 : ticket?.Types?.TypesTitle === 'story'
                                                 ? image2
+                                                : ticket?.Types?.TypesTitle === 'subTask'
+                                                ? image4
                                                 : ticket?.Types?.TypesIcon
                                             }
                                             alt="icon"
@@ -835,8 +838,11 @@ const Dashboard = () => {
                                                   ? image
                                                   : ticket?.Types?.TypesTitle === 'story'
                                                   ? image2
+                                                  : ticket?.Types?.TypesTitle === 'subTask'
+                                                  ? image4
                                                   : ticket?.Types?.TypesIcon
                                               }
+                                              
                                               alt="icon"
                                               style={{
                                                 width:

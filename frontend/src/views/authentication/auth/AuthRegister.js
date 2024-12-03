@@ -39,7 +39,7 @@ const AuthRegister = ({ title, subtitle, subtext }) => {
 
 
   const isValidEmail = (email) => {
-    return /\S+@(gmail\.com|esprit\.tn)/.test(email);
+    return /\S+@(gmail\.com|esprit\.tn|digidco.com)/.test(email);
   };
   
 

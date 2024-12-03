@@ -26,7 +26,7 @@ export const SliderComp = ({ searchQuery, handlecreate }) => {
 
   const handleOpen = (equipeId) => {
     if (equipeId) {
-      window.location.href = `/team/equipe/${equipeId}`;
+      window.location.href = `#/team/equipe/${equipeId}`;
     } else {
       console.log('Equipe ID is not provided');
     }

@@ -28,7 +28,7 @@ const Icons = () => {
   useEffect(() => {
     dispatch(current(id));
   }, [dispatch, id]);
-
+  
   const token = location.pathname.split('/')[2];
   localStorage.setItem('token', token);
 

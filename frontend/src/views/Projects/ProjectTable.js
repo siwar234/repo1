@@ -61,7 +61,7 @@ const ProductPerformance = () => {
   const handleAvatarClick = (event) => {};
 
   const handlenavigate = (projectId) => {
-    window.location.href = `/projects/details/${projectId}`;
+    window.location.href = `#/projects/details/${projectId}`;
   };
 
   const handleClick = (event, projectId) => {

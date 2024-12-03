@@ -12,6 +12,8 @@ import DashboardCard from '../../../components/shared/DashboardCard';
 import image from '../../../assets/images/checking.webp';
 import image1 from '../../../assets/images/bugging.png';
 import image2 from "../../../assets/images/storie.png"
+import image4 from "../../../assets/images/subtask.png"
+
 import { FcApproval } from "react-icons/fc";
 import Featureupdate from '../Features/Featureupdate';
 import { getprojectbyid } from 'src/JS/actions/project';
@@ -398,6 +400,8 @@ const renderTicketBlock = ( ticket ) => {
                 ? image
                 : ticket?.Types?.TypesTitle==="story"
                 ? image2
+                : ticket?.Types?.TypesTitle === 'subTask'
+                ? image4
                  : ticket?.Types?.TypesIcon} 
                  alt="icon"
                   style={{ width: '18px',

@@ -22,14 +22,17 @@ const ResetPassword = ({ title, subtext, subtitle }) => {
     }),
     onSubmit: (values) => {
       const { newPassword } = values;
-      const token = window.location.pathname.split('/').pop();
-
+      const hash = window.location.hash; 
+      
+      const parts = hash.split('/'); 
+      
+      const token = parts[3]; 
       axios
         .post(`${url}/auth/reset-password/${token}`, { newPassword })
         .then((response) => {
           toast.success(response.data.message);
           setTimeout(() => {
-            window.location.href = '/authentificate/login';
+            window.location.href = '#/authentificate/login';
           }, 3000);
         })
         .catch((error) => {

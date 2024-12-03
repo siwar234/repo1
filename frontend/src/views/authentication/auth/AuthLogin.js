@@ -27,8 +27,15 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   const location = useLocation();
   const passwordinvalid = useSelector((state) => state.userReducer.passwordinvalid);
 
-  const params = new URLSearchParams(location.search);
-  const token = params.get('token');
+  const hash = window.location.hash; 
+
+    const strinding = hash.split('?')[1]; 
+    
+    const params = new URLSearchParams(strinding);
+    const token = params.get('token');
+    
+  // const params = new URLSearchParams(location.search);
+  // const token = params.get('token');
   const equipeId = params.get('equipeId');
 
   const signInGoogle = () => {
@@ -36,7 +43,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
   };
 
   const isInvitationUrl = () => {
-    const params = new URLSearchParams(location.search);
+    // const params = new URLSearchParams(queryString);
     return params.has('equipeId') && params.has('token');
   };
 
@@ -82,7 +89,7 @@ const AuthLogin = ({ title, subtitle, subtext }) => {
       const expiryTimestamp = decodedToken.exp;
 
       if (expiryTimestamp < Date.now() / 1000) {
-        window.location.href = '/authentificate/login';
+        window.location.href = '#/authentificate/login';
         alert('Your invitation has expired.');
       }
     } catch (error) {

@@ -8,10 +8,13 @@ import AccountActivation from './auth/AccountActivation';
 const Activate = () => {
 
   const location = useLocation();
+ 
+  const hashingurl = window.location.hash; 
 
   const isInvitationUrl = () => {
-    const params = new URLSearchParams(location.search);
-    return params.has('equipeId') && params.has('token');
+    const queryStringedurl = hashingurl.split('?')[1]; 
+    const paramed = new URLSearchParams(queryStringedurl);
+    return paramed.has('equipeId') && paramed.has('token');
   };
 
   return (
@@ -57,7 +60,7 @@ const Activate = () => {
                 {isInvitationUrl() ? (
                   <Typography
                     component={Link}
-                    to={`/authentificate/login/${location.search}`}
+                    to={`authentificate/login/${hashingurl.split('?')[1]}`}
                     fontWeight="500"
                     sx={{
                       textDecoration: 'none',

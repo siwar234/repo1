@@ -22,18 +22,19 @@ module.exports = (passport) => {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://localhost:8000/auth/google/callback",
+        callbackURL: "http://localhost::8000/auth/google/callback",
         userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         prompt: 'select_account',
-        authType: 'rerequest' // Add this line
+        authType: 'rerequest'
       },
+
       async function (accessToken, refreshToken, profile, cb) {
         console.log(profile);
         try {
           const existingUser = await UserModel.findOne({ email: profile.emails[0].value });
 
           if (existingUser) {
-            return cb(null, existingUser); // User already exists, sign them in
+            return cb(null, existingUser); 
           }
 
           const userRole = await Role.findOne({ name: 'user' });

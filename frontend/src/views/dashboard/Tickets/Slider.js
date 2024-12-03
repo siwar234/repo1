@@ -36,7 +36,7 @@ export const Slider = ({ searchQuery,projects,user,tickets }) => {
 
   const handleOpen = (projectid) => {
     if (projectid) {
-      window.location.href = `/projects/details/${projectid}`;
+      window.location.href = `#/projects/details/${projectid}`;
     } else {
       // console.log('projectid ID is not provided');
     }

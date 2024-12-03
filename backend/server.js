@@ -14,8 +14,6 @@ const os = require('os');
 
 const Tasks=require('./models/Tasks');
 const cron = require('node-cron');
-const Equipe=require('./models/Equipe')
-const Project = require('./models/Project');
 const Ticket=require('./models/Tickets')
 const oneDay = 86400000;
 
@@ -70,7 +68,7 @@ const userRoute = require('./routes/user');
 const notificationRoute = require('./routes/notifications');
 const communicationRoute = require('./routes/CommunicationSpace');
 const worflowRoute = require('./routes/workflows');
-const typeRoute = require('./routes/Types');
+const typeRoute = require('./routes/types');
 
 // const { updateAllTicketsEtat } = require('./controllers/Tickets');
 // Google OAuth strategy
@@ -96,12 +94,11 @@ app.use('/pdf', express.static(path.join(__dirname, 'pdf')));
 app.use("/api/types/",typeRoute)
 // Start server
 const PORT = process.env.PORT ; 
-if (process.env.NODE_ENV !== 'test') {
-
-app.listen(PORT, () => {
+  const HOST = '0.0.0.0'; 
+app.listen(PORT,HOST,() => {
   console.log(`Server running on port ${PORT}`);
 });
-}
+
 app.use('/pdf', express.static(path.join(__dirname,  'pdf')));
 
 app.get('/api/pdf/:filename', (req, res) => {
@@ -123,7 +120,7 @@ const server = http.createServer();
 
 const io = require('socket.io')(server, {
   cors: {
-    origin: 'http://localhost:3000', 
+    origin: 'http://192.168.1.178', 
     methods: ['GET', 'POST'],
     // allowedHeaders: ['Authorization'],
     credentials: true,
@@ -133,7 +130,7 @@ const io = require('socket.io')(server, {
 
 
 
-server.listen(PORTT, () => {
+server.listen(PORTT,HOST, () => {
   console.log(`Socket server running on port ${PORTT}`);
 });
 
@@ -404,7 +401,6 @@ const checkOverdueTasks = async () => {
   }
 }
 
-if (process.env.NODE_ENV !== 'test') {
 
 io.on('connection', (socket) => {
   console.log('New client connected');
@@ -581,16 +577,16 @@ io.on('connection', (socket) => {
     console.log('Client disconnected');
   });
 });
-}
+
 
 
 if (process.env.NODE_ENV !== 'test') {
 
 cron.schedule('0 */3 * * *', () => {
   // console.log('Running checkOverdueTasks every 3 hours');
-  checkOverdueTasks();
-    approachingDeadline();
-     inactiveMember()
+  // checkOverdueTasks();
+  //   approachingDeadline();
+  //    inactiveMember()
 
 
   

@@ -77,7 +77,7 @@ export default function PriorityMenu({ isopened, handleclosed,currentPriority,se
       </MenuItem>)}
 
       <Divider />
-      <MenuItem style={{ fontFamily: "sans-serif" }}> Edit options</MenuItem>
+      {/* <MenuItem style={{ fontFamily: "sans-serif" }}> Edit options</MenuItem> */}
     </Menu>
   );
 }

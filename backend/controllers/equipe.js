@@ -104,6 +104,13 @@ const createEquipe = async (req, res) => {
   };
 
 
+
+
+
+
+
+
+
   
 const invitepeople = async (req, res) => {
   try{
@@ -122,6 +129,11 @@ const invitepeople = async (req, res) => {
 
 
 
+// Maximum allowed failed attempts
+const MAX_FAILED_ATTEMPTS = 3; 
+// Block duration in milliseconds (1 hour) 
+const BLOCK_DURATION = 60 * 60 * 1000; 
+
  const signinAfterInvitation = async (req, res) => {
     try {
         const user = jwt.verify(req.params.activation_token, process.env.JWT_SECRET);
@@ -135,14 +147,80 @@ const invitepeople = async (req, res) => {
         }
 
         if (!req.body.password) {
-            return res.status(400).json({ error: 'Password is required' });
+            return res.status(400).json({ error: 'User password is missing' });
         }
 
+        
+
+
+        
+
+
+
+
+
+        // const comparePass = await bcrypt.compare(req.body.password, existingUser.password);
+
+        // if (!comparePass) {
+        //     return res.status(401).json({ error: 'Invalid credentials' });
+        // }
+
+        if (existingUser.isBanned && existingUser.isBanned > new Date()) {
+          // Send email to banned user
+          await sendEmail({
+            email: existingUser.email,
+            subject: 'Account Banned Notification',
+            message: `<div style="max-width: 700px; margin:auto; padding: 50px 20px; font-size: 110%;">
+            
+          <!-- Image below the main content -->
+          <div style="text-align: center; margin-top: 20px;">
+            <img src="https://www.goodday.work/site/assets/img//solutions/blocks/more-marketing-teams.png" alt="Image" style="max-width: 50%;" />
+          </div>
+                <hr style="border-top: 1px solid #fff;">
+    
+            <p>Your account has been banned due to multiple failed login attempts. Please contact admin with email : nfaidhsiwar3@gmail.com to unblock your account </p>`,
+          });
+    
+          return res.status(403).json({ message: "banned" });
+        }
+    
         const comparePass = await bcrypt.compare(req.body.password, existingUser.password);
-
+    
         if (!comparePass) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+          // Handle failed login attempt
+          const now = new Date();
+          if (existingUser.lastFailedAttempt && (now - existingUser.lastFailedAttempt) < BLOCK_DURATION) {
+            existingUser.failedLoginAttempts += 1;
+          } else {
+            existingUser.failedLoginAttempts = 1;
+          }
+          existingUser.lastFailedAttempt = now;
+    
+          if (existingUser.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
+            existingUser.isBanned = new Date(now.getTime() + BLOCK_DURATION);
+            await existingUser.save();
+    
+            // Send email to banned user
+            await sendEmail({
+              email: existingUser.email,
+              subject: 'Account Banned Notification',
+              message: '<p>Your account has been banned due to multiple failed login attempts. Please contact support for more information.</p>',
+            });
+    
+            return res.status(403).json({ message: "banned" });
+          }
+    
+          await existingUser.save();
+          return res.status(400).json({ message: "passwordinvalid" });
         }
+    
+        existingUser.failedLoginAttempts = 0;
+        existingUser.lastFailedAttempt = null;
+
+
+
+
+        
 
         
         const { password, ...userWithoutPassword } = existingUser._doc;
@@ -364,6 +442,9 @@ const signupAfterInvitation = async (req, res) => {
     if (isExisting) {
       return res.status(400).json({ message: "Email already exists" });
     }
+
+
+
     
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 

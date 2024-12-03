@@ -33,7 +33,7 @@ const InvitationModal = ({ openModal, handleclosing, id }) => {
     };
     dispatch(sendInvitation(formData, id));
     setEmailsLocal([]);
-    handleclosing(); // Call handleClose without passing emails
+    handleclosing(); 
   };
 
   return (
@@ -102,7 +102,7 @@ const InvitationModal = ({ openModal, handleclosing, id }) => {
   fullWidth
   variant="outlined"
   placeholder="Enter email addresses"
-  value={selectedEmail} // Display only the selectedEmail
+  value={selectedEmail} 
   onChange={handleInputChange}
   onKeyDown={handleInputKeyDown}
 />

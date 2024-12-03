@@ -117,7 +117,7 @@ const handleclosing = () => {
   };
 
   const handleNavigate = () => {
-    window.location.href = '/team/teams';
+    window.location.href = '/#/team/teams';
   };
   const buttonBgColor = anchorEl ? 'rgb(231 236 251 / 85%)' : '';
   const buttoncolor = anchorEl ? '' : 'rgb(60 73 95)';
@@ -142,12 +142,17 @@ const handleclosing = () => {
 
   return (
     <>
-      <AppBar position="sticky" style={{ backgroundColor: 'white', display: 'flex' }} elevation={2}>
+      <AppBar position="sticky"
+       style={{ backgroundColor: 'white', display: 'flex' }} 
+       elevation={2}>
+
         <Toolbar
+
           style={{
             backgroundColor: 'transparent',
             display: 'flex',
             justifyContent: 'space-between',
+
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -166,10 +171,7 @@ const handleclosing = () => {
               <IconMenu width="20" height="20" />
             </IconButton>
 
-            {/* <CgSearch
-              style={{ width: '20px', fontSize: '20px', marginRight: '15px' }}
-              color="rgb(60 73 95)"
-            /> */}
+         }
 
 <SidebarMenu
         isMobileSidebarOpened={isMobileSidebarOpenned}

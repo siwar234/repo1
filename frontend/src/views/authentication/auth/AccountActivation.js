@@ -29,16 +29,36 @@ const AccountActivation = ({ title, subtitle, subtext }) => {
   const [confirmPasswordShown, setConfirmPasswordShown] = useState(false);
   const [errors, setErrors] = useState({}); 
   
-  const searchParams = new URLSearchParams(window.location.search);
-  const token = searchParams.get('token');
-  const equipeId = searchParams.get('equipeId');
+  const hashing = window.location.hash;
+
+  // Remove the initial '#' and split by '?'
+  const queryString = hashing.split('?')[1];
+  
+  // Use URLSearchParams to parse the query string
+  const params = new URLSearchParams(queryString);
+  
+  // Get the 'token' parameter
+  const token = params.get('token'); 
+    
+    // const searchParams = new URLSearchParams(queryString);
+  const equipeId = params.get('equipeId');
   const emailAlreadyExists = useSelector(state => state.userReducer.emailAlreadyExists);
   const backendErrors = useSelector(state => state.userReducer?.errors);
 
   const isInvitationUrl = () => {
-    const params = new URLSearchParams(location.search);
-    return params.has('equipeId') && params.has('token');
+    const hash = window.location.hash;
+  
+    
+      const queryStringg = hash.split('?')[1];
+  
+      const searchParams = new URLSearchParams(queryStringg);
+      console.log("ueri",queryStringg)
+
+      return searchParams.has('equipeId') && searchParams.has('token');
+    
   };
+  
+  console.log("ueri",token)
 
   useEffect(() => {
     axios

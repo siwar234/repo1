@@ -82,7 +82,7 @@ const NavBarMenu = ({
   // };
 
   const handlenavigate = () => {
-    window.location.href = '/projects/viewprojects';
+    window.location.href = '#/projects/viewprojects';
   };
 
 

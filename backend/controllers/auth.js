@@ -133,7 +133,7 @@ exports.Login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(400).json({ message: "passwordinvalid" });
+      return res.status(400).json({ message: "emailinvalid" });
     }
 
     if (!user.password) {

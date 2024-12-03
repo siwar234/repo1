@@ -25,7 +25,7 @@ router.get(
 
       const token = jwt.sign(payload, process.env.JWT_SECRET);
 
-      res.redirect(`http://localhost:3000/redirect?token=${token}&id=${id}`);
+      res.redirect(`http://192.168.1.178/#/redirect?token=${token}&id=${id}`);
     } catch (error) {
       console.error('Error generating JWT token:', error);
       return res.status(500).json({ message: 'Internal server error' });

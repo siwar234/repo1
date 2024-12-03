@@ -20,6 +20,8 @@ router.post("/reset-password/:token", resetPassword);
     const email = getEmailFromToken(token);
     res.json({ email });
   });
+
+  
   router.get('/current', authMiddleware, async (req, res) => {
     try {
       const user = await User.findById(req.user.id)

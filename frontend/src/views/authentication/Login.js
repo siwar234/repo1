@@ -10,9 +10,16 @@ import AuthLogin from './auth/AuthLogin';
 const Login2 = () => {
   const location = useLocation();
 
-  const isInvitationUrl = () => {
-    const params = new URLSearchParams(location.search);
-    return params.has('equipeId') && params.has('token');
+  const hashe = window.location.hash; 
+
+    const strinded = hashe.split('?')[1]
+
+    
+  const isInvitationUr = () => {
+    const queryStringg = hashe.split('?')[1]; 
+
+    const searchParams = new URLSearchParams(queryStringg)
+        return searchParams.has('equipeId') && searchParams.has('token');
   };
 
   return (
@@ -53,10 +60,10 @@ const Login2 = () => {
                     <Typography color="textSecondary" variant="h6" fontWeight="500">
                       New to TeamSync?
                     </Typography>
-                    {isInvitationUrl() ? (
+                    {isInvitationUr() ? (
                       <Typography
                         component={Link}
-                        to={`/email/activate/${location.search}`}
+                        to={`/email/activate${hashe}`}
                         fontWeight="500"
                         sx={{
                           textDecoration: 'none',
