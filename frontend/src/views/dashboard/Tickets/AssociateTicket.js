@@ -66,12 +66,13 @@ export default function AssociateTicket({ projectId, setShowAssociateTicket, tic
         <Select value={selectedRelation} label="Relation" onChange={handleRelationChange}>
           <MenuItem value="is blocked by">is blocked by</MenuItem>
           <MenuItem value="blocks">blocks</MenuItem>
-          <MenuItem value="is cloned by">is cloned by</MenuItem>
           <MenuItem value="clones">clones</MenuItem>
           <MenuItem value="is duplicated by">is duplicated by</MenuItem>
           <MenuItem value="duplicates">duplicates</MenuItem>
           <MenuItem value="is caused by">is caused by</MenuItem>
           <MenuItem value="causes">causes</MenuItem>
+          <MenuItem value="relates">causes</MenuItem>
+
           <MenuItem value="relates to">relates to</MenuItem>
         </Select>
       </FormControl>

@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { sendInvitation } from 'src/JS/actions/equipe';
 import image from '../../assets/images/Invite.gif';
+import * as Yup from 'yup';
+import { useSelector } from 'react-redux';
 
 const InvitationModal = ({ openModal, handleclosing, id }) => {
   const dispatch = useDispatch();
@@ -11,15 +13,51 @@ const InvitationModal = ({ openModal, handleclosing, id }) => {
   // const [inputValue, setInputValue] = useState('');
   const [emails, setEmailsLocal] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   const handleInputChange = (event) => {
     setSelectedEmail(event.target.value);
+    setEmailError("")
+
   };
+
+
+
+  const equipes = useSelector((state) => state.equipeReducer.equipes); 
 
   const handleInputKeyDown = (event) => {
     if (event.key === 'Enter' && selectedEmail.trim() !== '') {
-      setEmailsLocal([...emails, selectedEmail.trim()]);
-      setSelectedEmail('');
+      if (Yup.string().email().isValidSync(selectedEmail.trim())) {
+        // Check if the email already exists in the team
+        const teamExists = equipes.some(
+          (equipe) =>
+            equipe.emails.some((item) => item.email === selectedEmail.trim()) 
+        );
+        // console.log("teamExists",teamExists)
+
+        const ownerexists = equipes.some(
+          (equipe) =>
+         
+            equipe.owner.email === selectedEmail.trim()
+        );
+        
+        if (teamExists) {
+          setEmailError('Member already exists in the team');
+        }
+         
+        else if (ownerexists) {
+          setEmailError("you're already owner of te team");
+        }
+      
+        
+       
+         else  {
+          setEmailsLocal([...emails, selectedEmail.trim()]);
+          setSelectedEmail('');
+        }
+      } else {
+        setEmailError('Invalid email address');
+      }
     }
   };
 
@@ -105,6 +143,9 @@ const InvitationModal = ({ openModal, handleclosing, id }) => {
   value={selectedEmail} 
   onChange={handleInputChange}
   onKeyDown={handleInputKeyDown}
+  
+  error={!!emailError}
+  helperText={emailError}
 />
 
         
@@ -117,7 +158,7 @@ const InvitationModal = ({ openModal, handleclosing, id }) => {
                     border: 'none',
                     fontWeight: 'bold',
                     fontFamily: 'inherit',
-                    fontSize: '12px',
+                  fontSize: '12px',
                     color: 'black',
                     backgroundColor: 'white',
                     minWidth: '10px',

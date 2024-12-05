@@ -14,7 +14,6 @@ import {
 import { IoFlagSharp } from 'react-icons/io5';
 
 import EditIcon from '@mui/icons-material/Edit';
-import image4 from '../../assets/images/subtask.png';
 
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
@@ -52,7 +51,7 @@ import DeleteTaskModal from './Tasks/DeleteTaskModal';
 import { set } from 'lodash';
 import TerminateTask from './Tasks/TerminateTask';
 import ResponsibleMenu from './Tickets/ResponsibleMenu';
-
+import image5 from "../../assets/images/icons8-flow-chart-100.png"
 import FeaturesMenu from './Features/FeaturesMenu';
 import MenuFeature from './Features/MenuFeature';
 import Featureupdate from './Features/Featureupdate';
@@ -404,6 +403,9 @@ const Dashboard = () => {
 
   const [selectedIcon, setSelectedIcon] = useState('');
 
+
+ 
+
   return (
     <PageContainer title="Dashboard" description="This is Dashboard">
       <DashboardCard title="BackLog">
@@ -423,6 +425,8 @@ const Dashboard = () => {
             checked={checked}
           />
         </Box>
+
+        
         <Box mt={8} display={'flex'} flexDirection={'row'}>
           <Grid
             container
@@ -699,7 +703,10 @@ const Dashboard = () => {
                                   onMouseEnter={() => handleMouseEnter(task._id, index)}
                                   onMouseLeave={handleMouseLeave}
                                 >
-                                  <TableCell style={{ width: '100%', border: '1px solid #d1d1d1' }}>
+                                  <TableCell style={{ width:  hoveredRow.taskId === task._id && hoveredRow.index === index ? '50%' :"100%", 
+                                    
+                                    
+                                    border: '1px solid #d1d1d1' }}>
                                     <Box
                                       style={{
                                         display: 'flex',
@@ -724,8 +731,6 @@ const Dashboard = () => {
                                                 ? image
                                                 : ticket?.Types?.TypesTitle === 'story'
                                                 ? image2
-                                                : ticket?.Types?.TypesTitle === 'subTask'
-                                                ? image4
                                                 : ticket?.Types?.TypesIcon
                                             }
                                             alt="icon"
@@ -838,11 +843,8 @@ const Dashboard = () => {
                                                   ? image
                                                   : ticket?.Types?.TypesTitle === 'story'
                                                   ? image2
-                                                  : ticket?.Types?.TypesTitle === 'subTask'
-                                                  ? image4
                                                   : ticket?.Types?.TypesIcon
                                               }
-                                              
                                               alt="icon"
                                               style={{
                                                 width:
@@ -878,7 +880,7 @@ const Dashboard = () => {
                                           </Tooltip>
                                           
                                           { userid === project.Responsable._id && 
-
+                                           
                                           hoveredRow.taskId === task._id &&
                                             hoveredRow.index === index && (
                                               <>
@@ -912,7 +914,7 @@ const Dashboard = () => {
                                             )}
                                         </Typography>
                                       )}
-                                      <Featureupdate
+                                      {/* <Featureupdate
                                         ticket={ticket}
                                         ticketid={ticket._id}
                                         typographyStyle={{
@@ -924,7 +926,7 @@ const Dashboard = () => {
                                           fontWeight: 'bold',
                                           marginBottom: '3px',
                                           fontFamily: 'sans-serif',
-                                          marginLeft: isSecondGridOpen ? '-95px' : '60px',
+                                          marginLeft: isSecondGridOpen? "15px" : '60px',
                                           color:
                                             ticket.Feature?.iconF === '#7CA1F3'
                                               ? '#385DB0'
@@ -939,13 +941,63 @@ const Dashboard = () => {
                                         handleFeatureSelect={(featureid) =>
                                           handleFeatureSelect(featureid, ticket._id)
                                         }
-                                      />
+                                      /> */}
 
+<Featureupdate
+    ticket={ticket}
+    typographyStyle={{
+        fontSize: "13px",
+        width: "120px",
+        textAlign: "center",
+        borderRadius: "3px",
+        height: "fit-content",
+        fontWeight: "bold",
+        marginBottom: "3px",
+        fontFamily: "sans-serif",
+        marginLeft: "10px",
+        marginTop: "10px",
+        color:
+            ticket.Feature?.iconF === "#7CA1F3"
+                ? "#385DB0"
+                : ticket.Feature?.iconF === "#CDF7D4"
+                ? "#51A15F"
+                : ticket.Feature?.iconF === "#ffc0ca"
+                ? "#CC596B"
+                : "black",
+        backgroundColor: ticket.Feature?.iconF,
+    }}
+
+    handleFeatureSelect={(featureId) => handleFeatureSelect(featureId, ticket._id)}
+    isSecondGridOpen={isSecondGridOpen}
+    isComponent1={true} 
+/>
+
+
+<Tooltip
+      title={` ${
+        ticket.childTickets?.filter(child => child.workflow === 'DONE').length  || 0
+      } of  ${ ticket.childTickets.length} Done Child Tickets `}
+    >
+                         {ticket.childTickets.length>0  && (
+                                          <img
+                                          src={image5}
+                                          alt='childTicke'
+                                            style={{ width:"15px" ,height:"15px",
+                                              marginRight: "15px",
+                                              marginLeft: isSecondGridOpen &&
+                                                // hoveredRow.taskId === task._id && hoveredRow.index === index &&
+                                               "15px"
+                                            }}
+
+                                          />
+                                        )}
+</Tooltip>
                                       <Box
                                         style={{
                                           display: 'flex',
                                           flexDirection: 'row',
                                           alignItems: 'center',
+                                          marginLeft:"10px"
                                         }}
                                       >
                                         <Button
@@ -996,16 +1048,7 @@ const Dashboard = () => {
                                           />
                                         </Button>
 
-                                        {/* <WorkflowMenu
-                                          anchorEl={anchorEls[ticket._id]}
-                                          handleCloseing={() => handleCloseing(ticket._id)}
-                                          setEtat={(etatValue) =>
-                                            handleupdateEtat(ticket._id, etatValue)
-                                          }
-                                          // currentEtat={etat}
-
-                                          currentEtat={ticket.workflow.workflowTitle}
-                                        /> */}
+                                     
 
 {userid === project.Responsable._id && (
 
@@ -1026,6 +1069,13 @@ const Dashboard = () => {
                                             style={{ color: '#c04747', marginRight: '10px' }}
                                           />
                                         )}
+
+
+
+
+
+
+
                                         <Button
                                           aria-controls={isopened[ticket._id] ? 'menu' : undefined}
                                           aria-expanded={Boolean(isopened[ticket._id])}
@@ -1044,7 +1094,7 @@ const Dashboard = () => {
                                                 ? '#cdf7d4'
                                                 : '#ffc0ca',
 
-                                            marginRight: '60px',
+                                            marginRight: isSecondGridOpen ? "5px" :'60px',
 
                                             color:
                                               ticket.Priority === 'Low'
@@ -1525,7 +1575,18 @@ const Dashboard = () => {
             projectId={projectId}
           />
 
-          <TicketDetail isSecondGridOpen={isSecondGridOpen} />
+          <TicketDetail
+          handleResponsible={handleResponsible}
+          handleAssignResponsible={handleAssignResponsible}
+          MenuResponsible={MenuResponsible}
+          handleclosedResponsible={handleclosedResponsible}
+          handlePriority={handlePriority}
+          handleclosed={handleclosed}
+          isopened={isopened}
+          handleupdatePriority={handleupdatePriority}
+          handleFeatureSelect={handleFeatureSelect}
+          handleClicked={handleClicked}
+           isSecondGridOpen={isSecondGridOpen}  project={project} anchorEls={anchorEls}  handleCloseing={handleCloseing} handleupdateEtat={handleupdateEtat} />
         </Box>
       </DashboardCard>
     </PageContainer>

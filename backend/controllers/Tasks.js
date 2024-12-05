@@ -103,11 +103,15 @@ exports.updateTask = async (req, res) => {
           {
             path: 'childTickets',
             populate: [
-              {
-                path: 'ticketId',
+              { 
+                path: 'ticketId', 
                 model: 'Tickets',
-              }
-            ]
+               
+              },
+              { path: 'workflow', model: 'Workflow' }
+
+            ],
+           
           },
           { path: 'comments', populate: { path: 'commenterId', model: 'User' } }
         ]
@@ -262,11 +266,15 @@ exports.moveTicket = async (req, res) => {
         {
           path: 'childTickets',
           populate: [
-            {
-              path: 'ticketId',
+            { 
+              path: 'ticketId', 
               model: 'Tickets',
-            }
-          ]
+             
+            },
+            { path: 'workflow', model: 'Workflow' }
+
+          ],
+         
         },
         { 
           path: 'comments', 
@@ -349,11 +357,16 @@ exports.createTasks = async (req, res) => {
             {
               path: 'childTickets',
               populate: [
-                {
-                  path: 'ticketId',
+                { 
+                  path: 'ticketId', 
                   model: 'Tickets',
-                }
-              ]
+                 
+                },
+                { path: 'workflow',
+                   model: 'Workflow' }
+
+              ],
+             
             },
             { path: 'projectId', model: 'Project' },
             { path: 'Types', model: 'Types' },
@@ -401,15 +414,19 @@ exports.relatedTasks = async (req, res) => {
     }
   ]
 },
-          {
-            path: 'childTickets',
-            populate: [
-              {
-                path: 'ticketId',
-                model: 'Tickets',
-              }
-            ]
-          },
+{
+  path: 'childTickets',
+  populate: [
+    { 
+      path: 'ticketId', 
+      model: 'Tickets',
+     
+    },
+    { path: 'workflow', model: 'Workflow' }
+
+  ],
+ 
+},
 
         ]
     }).populate('projectId').populate('related')
@@ -467,11 +484,15 @@ exports.unrelatedTasks = async (req, res) => {
           {
             path: 'childTickets',
             populate: [
-              {
-                path: 'ticketId',
+              { 
+                path: 'ticketId', 
                 model: 'Tickets',
-              }
-            ]
+               
+              },
+              { path: 'workflow', model: 'Workflow' }
+
+            ],
+           
           },
           {
             path: 'comments',
@@ -538,28 +559,21 @@ exports.getAlltasks = async (req, res) => {
                   ]
                 }
               ]
-            },  {
-              path: 'associatedTickets',
+            }, 
+            {
+              path: 'childTickets',
               populate: [
                 { 
                   path: 'ticketId', 
                   model: 'Tickets',
-                  populate: [
-                    { path: 'ResponsibleTicket', model: 'User' },
-                    { path: 'workflow', model: 'Workflow' }
-                  ]
-                }
-              ]
+                 
+                },
+                { path: 'workflow', model: 'Workflow' }
+
+              ],
+             
             },
-          {
-            path: 'childTickets',
-            populate: [
-              {
-                path: 'ticketId',
-                model: 'Tickets',
-              }
-            ]
-          },
+        
           { 
             path: 'comments', 
             populate: { path: 'commenterId', model: 'User' } 

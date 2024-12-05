@@ -81,9 +81,10 @@ exports.associateTicket = async (req, res) => {
       case 'is cloned by':
         inverseRelation = 'clones';
         break;
-      case 'clones':
-        inverseRelation = 'is cloned by';
-        break;
+        case 'split to':
+          inverseRelation = 'split from ';
+          break;
+      
       case 'is duplicated by':
         inverseRelation = 'duplicates';
         break;

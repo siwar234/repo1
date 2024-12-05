@@ -4,7 +4,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import { Box, Button, Typography, Tooltip, Divider } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteEquipe, deleteLink, fetchEquipesbyId, getLinks, leaveEquipe } from 'src/JS/actions/equipe';
+import { deleteEquipe, deleteLink, fetchEquipes, fetchEquipesbyId, getLinks, leaveEquipe } from 'src/JS/actions/equipe';
 import Card from '@mui/material/Card';
 import image from '../../assets/images/jira.png';
 import { useParams } from 'react-router';
@@ -103,10 +103,11 @@ const EquipeDetails = () => {
     setAnchorEl(null);
   };
 
-  
   useEffect(() => {
     dispatch(fetchEquipesbyId(id))
+    dispatch(fetchEquipes(user))
 
+    
   }, [dispatch]);
 
 

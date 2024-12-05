@@ -67,18 +67,37 @@ const socket = io(`${httpUrl}`);
   }
 };
 
-  export const signinAfterInvitation = (activationToken,email, equipeId, password,navigate) => async (dispatch) => {
-    try {
-      const response = await axios.post(`${url}/equipe/signin-after-invitation/${activationToken}/${equipeId}`, { password,email });
-      dispatch({ type: SIGN_IN_USER, payload: response.data });
-      navigate(`/team/equipe/${equipeId}`);
-      
-      toast.success('Login successful!');
+export const signinAfterInvitation = (activationToken,email, equipeId, password,navigate) => async (dispatch) => {
+  try {
+    const response = await axios.post(`${url}/equipe/signin-after-invitation/${activationToken}/${equipeId}`, { password,email });
+    dispatch({ type: SIGN_IN_USER, payload: response.data });
+    navigate(`/team/equipe/${equipeId}`);
+    
+    toast.success('Login successful!');
 
-    } catch (error) {
-      dispatch({ type: FAIL_USER, payload: error.response.data });
+  } catch (error) {
+    if (error.response) {
+      if (error.response.status === 400 && error.response.data.message === "passwordinvalid") {
+        dispatch({ type: PASSWORD_INVALID });
+        toast.error('Invalid password. Please try again.');
+      } else if (error.response.status === 403 && error.response.data.message === "banned") {
+        toast.error('Your account is locked due to multiple failed login attempts. It will be locked for an hour. Please contact the admin if you need assistance.');
+        
+        socket.emit('failedAttemptnotification', {
+          email: email,
+          message: 'A user has failed to login multiple times.',
+        });
+
+      } else {
+        dispatch({ type: FAIL_USER, payload: error.response.data });
+        toast.error('An error occurred during login. Please try again later.');
+      }
+    } else {
+      dispatch({ type: FAIL_USER, payload: error.message });
+      toast.error('An error occurred during login. Please try again later.');
     }
-  };
+  }
+};
 
 
   

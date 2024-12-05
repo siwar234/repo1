@@ -63,7 +63,7 @@ export default function StoryPoints({ projectId, userId, ticket, project }) {
               position: 'relative',
               fontSize: '13px',
               fontWeight: 'bold',
-              marginRight: '25px',
+              marginRight: '12px',
               padding: '0 5px',
             }}
             onClick={toggleEditMode}

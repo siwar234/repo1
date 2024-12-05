@@ -28,9 +28,26 @@ import AssociateTicket from './AssociateTicket';
 import ChildTicket from './ChildTicket';
 import ChildList from './ChildList';
 import AssoicatedList from './AssoicatedList';
+import WorkflowMenu from './workflow/WorkflowMenu';
+import PriorityMenu from './PriorityMenu';
+import Featureupdate from '../Features/Featureupdate';
+import ResponsibleMenu from './ResponsibleMenu';
+import StoryPoints from './StroyPoints';
 
 
-export default function TicketDetail({  isSecondGridOpen }) {
+export default function TicketDetail({  handleClicked,
+  isSecondGridOpen,project,
+  handleCloseing,handleupdateEtat,anchorEls,
+  handleclosed,
+isopened,
+handleupdatePriority,
+handlePriority,
+handleFeatureSelect ,
+handleAssignResponsible,
+MenuResponsible,
+handleclosedResponsible,
+handleResponsible,
+ }) {
   const [ticketsdata, setTicketsData] = useState({
     descriptionticket: {},
   });
@@ -461,11 +478,17 @@ const handleButtonClick = () => {
         onClick={handleButtonClick}
       >
         <AssociationIcon />
-      </IconButton></Tooltip>
+      </IconButton>
+      </Tooltip>
                       </div>
 <div style={{display:'flex', flexDirection:"row"}}>
                       <Button
-                        
+                          aria-controls={
+                            anchorEls[isSecondGridOpen[taskId][ticketId]._id] ? 'long-menu' : undefined
+                          }
+                          aria-expanded={Boolean(anchorEls[isSecondGridOpen[taskId][ticketId]._id])}
+                          aria-haspopup="true"
+                          onClick={(event) => handleClicked(event, isSecondGridOpen[taskId][ticketId]._id)}
                         style={{
                           fontSize: '10px',
                           width: '120px',
@@ -507,11 +530,28 @@ const handleButtonClick = () => {
                           }}
                         />
                       </Button>
+
+                      {userId === project.Responsable._id && (
+
+<WorkflowMenu
+  anchorEl={anchorEls[isSecondGridOpen[taskId][ticketId]._id]}
+  userid={userId}
+  ticketId={isSecondGridOpen[taskId][ticketId]._id}
+  projectId={projectId}
+  handleCloseing={() => handleCloseing(isSecondGridOpen[taskId][ticketId]._id)}
+  setWorkflow={(workflowId) =>
+    handleupdateEtat(isSecondGridOpen[taskId][ticketId]._id, workflowId)
+  }
+  currentWorkflow={isSecondGridOpen[taskId][ticketId].workflow.workflowTitle}
+/>
+)}
                       
                       {isSecondGridOpen[taskId][ticketId].flag && (
                         <>
                       <IoFlagSharp  style={{color:"#c04747",marginTop:"25px"}} />
                       <span style={{color:"var(--ds-text-subtlest,#6b778c)",marginTop:"20px",marginLeft:"5px",fontFamily:"system-ui",lineHeight:"24px",maxWidth:"200px"}} >Marqued</span></>)}
+                   
+                   
                       </div>
 
                     
@@ -687,25 +727,23 @@ const handleButtonClick = () => {
   taskId={taskId}
    ticketId={isSecondGridOpen[taskId][ticketId]?._id}
    projectId={projectId}  />
-
-
-
-{showchildTicket && (
-
-<ChildTicket  setshowchildTicket={setshowchildTicket}
-projectId={projectId} taskId={taskId} isSecondGridOpen={isSecondGridOpen} 
-    ticketId={isSecondGridOpen[taskId][ticketId]?._id}
-
- />
- 
- 
- )} 
-
-
 <ChildList 
 isSecondGridOpen={isSecondGridOpen} 
 taskId={isSecondGridOpen[taskId]} 
 ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  /> 
+
+
+{showchildTicket && (
+
+<ChildTicket projectId={projectId} taskId={taskId} isSecondGridOpen={isSecondGridOpen}  setshowchildTicket={setshowchildTicket} 
+    ticketId={isSecondGridOpen[taskId][ticketId]?._id}
+
+ />
+ 
+ )} 
+
+
+
 
 
                   {/* details box  */}
@@ -748,6 +786,9 @@ ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  />
       <div style={{ marginLeft: "10px", marginTop: "10px",color: "rgb(71 71 71)" }}>Responsable</div>
       <span>
         <Avatar
+         onClick={(event) =>
+          handleResponsible(event, isSecondGridOpen[taskId][ticketId]?._id)
+        }
           src={isSecondGridOpen[taskId][ticketId]?.ResponsibleTicket?.profilePicture}
           sx={{
             bgcolor: '#42a5f5',
@@ -764,41 +805,71 @@ ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  />
       </span>
       <Typography style={{ marginLeft: "10px", marginTop: "10px" }}>
     {isSecondGridOpen[taskId][ticketId]?.ResponsibleTicket?.firstName || "Not assigned"}
+
 </Typography>
+{userId === project.Responsable._id && (
+  
+  <ResponsibleMenu
+    ResponsibleTicket={isSecondGridOpen[taskId][ticketId]?.ResponsibleTicket?.firstName}
+    responsible={isSecondGridOpen[taskId][ticketId]?.ResponsibleTicket}
+    Responsibleid={isSecondGridOpen[taskId][ticketId]?.ResponsibleTicket?._id}
+    projectId={projectId}
+    ticketId={isSecondGridOpen[taskId][ticketId]._id}
+    handleAssignResponsible={(userId) =>
+      handleAssignResponsible(userId, isSecondGridOpen[taskId][ticketId]._id)
+    }
+    MenuResponsible={MenuResponsible[isSecondGridOpen[taskId][ticketId]._id]}
+    handleclosedResponsible={() =>
+      handleclosedResponsible(isSecondGridOpen[taskId][ticketId]._id)
+    }
+  />)}
+
+
     </div>
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <div style={{ marginLeft: "10px", marginTop: "10px",color: "rgb(71 71 71)" }}>Parent</div>
-      <Button
-                                       
-                                        style={{
-                                          fontSize:'12px',
-                                          width: "fit-content",
-                                          textAlign: 'center',
-                                          borderRadius: '3px',
-                                          height: 'fit-content',
-                                          fontWeight: 'bold',
-                                          marginBottom: '3px',
-                                          fontFamily: 'sans-serif',
-                                          marginLeft:'120px',
-                                          marginTop:'10px',
-                                          color: isSecondGridOpen[taskId][ticketId].Feature?.iconF === '#7CA1F3' ? '#385DB0' :
-                                          isSecondGridOpen[taskId][ticketId].Feature?.iconF === '#CDF7D4' ? '#51A15F' :
-                                          isSecondGridOpen[taskId][ticketId].Feature?.iconF === '#ffc0ca' ? '#CC596B' : '#878787',
-                                          backgroundColor: isSecondGridOpen[taskId][ticketId].Feature?.iconF}}
-                                      >
-                                        <span>{ isSecondGridOpen[taskId][ticketId].Feature?.titleF}</span></Button>
+    
+<Featureupdate
+    ticket={isSecondGridOpen[taskId][ticketId]}
+    typographyStyle={{
+        fontSize: "13px",
+        width: "120px",
+        textAlign: "center",
+        borderRadius: "3px",
+        height: "fit-content",
+        fontWeight: "bold",
+        marginBottom: "3px",
+        fontFamily: "sans-serif",
+        marginLeft: "10px",
+        marginTop: "10px",
+        color:
+        isSecondGridOpen[taskId][ticketId]?.Feature?.iconF === "#7CA1F3"
+                ? "#385DB0"
+                : isSecondGridOpen[taskId][ticketId]?.Feature?.iconF === "#CDF7D4"
+                ? "#51A15F"
+                : isSecondGridOpen[taskId][ticketId]?.Feature?.iconF === "#ffc0ca"
+                ? "#CC596B"
+                : "black",
+        backgroundColor: isSecondGridOpen[taskId][ticketId]?.Feature?.iconF,
+    }}
+    handleFeatureSelect={(featureId) => handleFeatureSelect(featureId, isSecondGridOpen[taskId][ticketId]?._id)}
+    isSecondGridOpen={isSecondGridOpen}
+    isComponent1={false}
+/>
+
+     
       </div>
-      {/* <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div style={{ marginLeft: "10px", marginTop: "10px",color: "rgb(71 71 71)" }}>StoryPoints</div>
-   <span>
-      <Typography >{isSecondGridOpen[taskId][ticketId].TaskId.storyPoints}</Typography>
-</span>
-      </div> */}
+      
 
       <div style={{ display: 'flex', alignItems: 'center' }}>
       <div style={{ marginLeft: "10px", marginTop: "10px",color: "rgb(71 71 71)" }}>Priortiy</div>
+
    <span>
    <Button
+   aria-controls={isopened[isSecondGridOpen[taskId][ticketId]._id] ? 'menu' : undefined}
+   aria-expanded={Boolean(isopened[isSecondGridOpen[taskId][ticketId]._id])}
+   aria-haspopup="true"
+   onClick={(event) => handlePriority(event, isSecondGridOpen[taskId][ticketId]._id)}
                                        
                                         style={{
                                           fontSize:'12px',
@@ -831,7 +902,35 @@ ticketId={isSecondGridOpen[taskId][ticketId]?._id} projectId={projectId}  />
                                         <span style={{ fontSize: '13px' }}>{isSecondGridOpen[taskId][ticketId].Priority}</span>
                                        
                                       </Button></span>
-      </div>    {/* <div style={{ marginLeft: "10px", marginTop: "10px" }}>Labels</div> */}
+
+                                      {userId === project.Responsable._id && (
+
+<PriorityMenu
+  isopened={isopened[ isSecondGridOpen[taskId][ticketId]._id]}
+  handleclosed={() => handleclosed( isSecondGridOpen[taskId][ticketId]._id)}
+  currentPriority={ isSecondGridOpen[taskId][ticketId].Priority}
+  setPriority={(PrioritytValue) =>
+    handleupdatePriority( isSecondGridOpen[taskId][ticketId]._id, PrioritytValue)
+  }
+/>)}
+      </div>  
+      <div style={{ display: 'flex' ,flexDirection:"row"}}>
+
+      
+      <div style={{ marginLeft: "10px",marginTop: "10px",color: "rgb(71 71 71)",
+
+       }}
+       >StoryPoints
+       </div>
+         <StoryPoints
+         
+                                          userId={userId}
+                                          projectId={projectId}
+                                          ticket={isSecondGridOpen[taskId][ticketId]}
+                                          project={project}
+                                        />
+        
+         </div>
   </Box>
 )}
 
